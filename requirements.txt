@@ -1,0 +1,5 @@
+aiogram>=3.4
+fastapi
+uvicorn
+httpx
+aiosqlite

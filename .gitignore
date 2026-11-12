@@ -1,0 +1,4 @@
+torqum.db
+__pycache__/
+.env
+uploads/
