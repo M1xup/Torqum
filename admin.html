@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TORQUM · Админ-панель</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--obsidian:#090A0C;--graphite:#17191D;--graphite2:#1F2126;--titanium:#C5C8CD;--volt:#B6F36A;--muted:#7A7F88;--line:#24272d}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--obsidian);color:var(--titanium);font-family:'Space Grotesk',system-ui,sans-serif;font-size:14px;line-height:1.55}
+main{max-width:640px;margin:0 auto;padding:16px 16px 60px}
+.logo{font-weight:700;letter-spacing:.34em;color:#fff;text-align:center;padding:18px 0 4px;font-size:15px}
+.sub{font-size:9px;letter-spacing:.28em;color:var(--muted);text-align:center;margin-bottom:16px}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tabs button{flex:1;padding:11px 0;border-radius:12px;border:1px solid var(--line);background:var(--graphite);color:var(--muted);font-size:12px;cursor:pointer}
+.tabs button.active{background:var(--volt);border-color:var(--volt);color:#0A0C08;font-weight:600}
+.card{background:var(--graphite);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h3{color:#fff;font-size:14px}
+.card .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.pill{display:inline-block;font-size:10px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;margin:4px 4px 0 0;color:var(--muted)}
+.pill.v{color:var(--volt);border-color:#3a4a22}
+.btn{display:inline-block;padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:var(--graphite2);color:var(--titanium);font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+.btn.primary{background:var(--volt);border-color:var(--volt);color:#0A0C08}
+.btn.danger{background:transparent;border-color:#4a2c2c;color:#e08a8a}
+.btn.wide{display:block;width:100%}
+label{display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:12px 0 5px}
+input,textarea,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--obsidian);color:var(--titanium);font-family:inherit;font-size:14px}
+textarea{min-height:84px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--titanium)}
+.check input{width:18px;height:18px}
+#pform{position:fixed;inset:0;z-index:20;display:none;overflow-y:auto;background:rgba(0,0,0,.7)}
+#pform.open{display:block}
+#pform .panel{max-width:560px;margin:20px auto 40px;width:calc(100% - 24px);background:var(--obsidian);border:1px solid var(--line);border-radius:18px;padding:18px}
+h4.sec{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--titanium);margin:26px 0 12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{color:var(--muted);text-align:left;font-weight:500;padding:6px 4px;border-bottom:1px solid var(--line)}
+td{padding:8px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+td .st{font-weight:600}
+.st.paid{color:var(--volt)} .st.pending{color:#e0c36a} .st.canceled,.st.expired,.st.refunded,.st.chargeback{color:#e08a8a}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--graphite2);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:13px;display:none;z-index:99}
+#toast.show{display:block}
+#gate{text-align:center;padding:80px 20px;color:var(--muted)}
+.rip-host{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(182,243,106,.30) 0%,rgba(182,243,106,.14) 42%,transparent 70%);transform:scale(0);animation:rippleAnim .55s ease-out forwards}
+@keyframes rippleAnim{to{transform:scale(1);opacity:0}}
+.btn,.tabs button{transition:transform .12s ease,box-shadow .3s ease}
+.btn.primary:active{box-shadow:0 0 22px rgba(182,243,106,.35)}
+
+.hint{font-size:11px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="logo">T O R Q U M</div>
+<div class="sub">ADMIN CONSOLE</div>
+<main>
+  <div id="gate">Проверка доступа…</div>
+  <div id="app" style="display:none">
+    <div class="tabs">
+      <button data-s="products" class="active" onclick="showSec('products')">Товары</button>
+      <button data-s="content" onclick="showSec('content')">Контент</button>
+      <button data-s="orders" onclick="showSec('orders')">Заказы</button>
+    </div>
+
+    <section id="s-products">
+      <button class="btn primary wide" onclick="newProduct()">+ Новый товар</button>
+      <div id="plist" style="margin-top:14px"></div>
+    </section>
+
+    <section id="s-content" style="display:none">
+      <h4 class="sec">Текст на главной</h4>
+      <textarea id="s-home_text"></textarea>
+      <h4 class="sec">Блок «О нас»</h4>
+      <textarea id="s-about_text"></textarea>
+      <h4 class="sec">Контакты поддержки (показываются в меню, корзине, «О нас», /policy, /terms)</h4>
+      <textarea id="s-support_contacts"></textarea>
+      <h4 class="sec">Категории (через запятую)</h4>
+      <input id="s-categories" placeholder="Для работы, Для творчества">
+      <div class="hint">Первая версия главной, блок «О нас» и контакты применяются сразу после сохранения.</div>
+      <button class="btn primary wide" style="margin-top:16px" onclick="saveSettings()">Сохранить контент</button>
+    </section>
+
+    <section id="s-orders" style="display:none">
+      <h4 class="sec">Все заказы</h4>
+      <div class="card" style="padding:10px"><div style="overflow-x:auto"><table id="otable"></table></div></div>
+    </section>
+  </div>
+</main>
+
+<div id="pform"><div class="panel" id="pform-panel"></div></div>
+<div id="toast"></div>
+
+<script>
+const initData = window.Telegram ? window.Telegram.WebApp.initData : '';
+try{ if(window.Telegram){ Telegram.WebApp.ready(); Telegram.WebApp.expand(); } }catch(e){}
+
+/* ---------- анимация-«плафон» на всех кнопках ---------- */
+document.addEventListener('pointerdown', function(e){
+  const t = e.target.closest('button, .drawer-link, .chip');
+  if (!t || t.disabled) return;
+  const r = t.getBoundingClientRect();
+  const d = Math.max(r.width, r.height) * 2;
+  const s = document.createElement('span');
+  s.className = 'ripple';
+  s.style.width = s.style.height = d + 'px';
+  s.style.left = ((e.clientX || r.left + r.width/2) - r.left - d/2) + 'px';
+  s.style.top = ((e.clientY || r.top + r.height/2) - r.top - d/2) + 'px';
+  t.classList.add('rip-host');
+  t.appendChild(s);
+  setTimeout(function(){ s.remove(); }, 620);
+}, {passive:true});
+
+let D = null;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className='show';
+  clearTimeout(t._h); t._h = setTimeout(()=>t.className='', 3000);
+}
+function esc(s){ const d=document.createElement('div'); d.textContent=(s==null?'':String(s)); return d.innerHTML; }
+function fmt(n){ return new Intl.NumberFormat('ru-RU').format(Math.round(n*100)/100) + ' ₽'; }
+function fmtDate(ts){ if(!ts) return '—'; return new Date(ts*1000).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+
+async function api(path, opts){
+  opts = opts || {};
+  const r = await fetch(path, {
+    method: opts.method||'GET',
+    headers:{'Content-Type':'application/json','X-Init-Data':initData},
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  if(!r.ok){
+    let d='Ошибка '+r.status;
+    try{ const j=await r.json(); if(j.detail) d=j.detail; }catch(e){}
+    throw new Error(d);
+  }
+  return r.json();
+}
+
+function showSec(name){
+  ['products','content','orders'].forEach(s=>{
+    document.getElementById('s-'+s).style.display = s===name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.s===name));
+}
+
+/* ---------- товары ---------- */
+
+function renderProducts(){
+  const el = document.getElementById('plist');
+  if (!D.products.length){ el.innerHTML = '<div class="card">Товаров пока нет — создайте первый.</div>'; return; }
+  el.innerHTML = D.products.map(p=>
+    '<div class="card">'
+    + '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><h3>'+esc(p.title)+'</h3><b style="color:var(--volt);white-space:nowrap">'+fmt(p.price)+'</b></div>'
+    + '<div class="row"><span>'+esc(p.category||'—')+' · '+(p.type==='file'?'файл':'текст')+'</span><span>'+(p.count<0?'∞':('осталось: '+p.count))+'</span></div>'
+    + '<div>'
+    + (p.featured?'<span class="pill v">Популярный</span>':'')
+    + (p.collection?'<span class="pill v">Select</span>':'')
+    + (p.active?'':'<span class="pill" style="border-color:#4a2c2c;color:#e08a8a">Скрыт</span>')
+    + (p.badge?'<span class="pill">'+esc(p.badge)+'</span>':'')
+    + '</div>'
+    + '<div style="display:flex;gap:8px;margin-top:12px">'
+    + '<button class="btn" style="flex:1" onclick=\'editProduct('+p.id+')\'>Изменить</button>'
+    + '<button class="btn danger" onclick=\'delProduct('+p.id+')\'>Удалить</button>'
+    + '</div></div>'
+  ).join('');
+}
+
+function newProduct(){ openForm(null); }
+function editProduct(id){ openForm(D.products.find(p=>p.id===id)); }
+function closeForm(){ document.getElementById('pform').classList.remove('open'); }
+
+function openForm(p){
+  const v = p || {title:'',description:'',price:0,category:'',count:-1,type:'text',content:'',image_url:'',badge:'',featured:0,collection:0,active:1,sort:0};
+  document.getElementById('pform-panel').innerHTML =
+    '<h3 style="color:#fff;margin-bottom:4px">'+(p?'Редактирование товара':'Новый товар')+'</h3>'
+    + '<input type="hidden" id="p-id" value="'+(p?p.id:'')+'">'
+    + '<label>Название</label><input id="p-title" value="'+esc(v.title)+'">'
+    + '<label>Описание</label><textarea id="p-desc">'+esc(v.description)+'</textarea>'
+    + '<div class="two">'
+    + '<div><label>Цена, ₽</label><input id="p-price" type="number" step="0.01" value="'+(p?p.price:'')+'"></div>'
+    + '<div><label>Количество (-1 = ∞, 0 = нет)</label><input id="p-count" type="number" value="'+v.count+'"></div>'
+    + '</div>'
+    + '<div class="two">'
+    + '<div><label>Категория</label><input id="p-cat" value="'+esc(v.category)+'"></div>'
+    + '<div><label>Метка (Новинка, Select…)</label><input id="p-badge" value="'+esc(v.badge)+'"></div>'
+    + '</div>'
+    + '<div class="two">'
+    + '<div><label>Тип товара</label><select id="p-type">'
+    +   '<option value="text" '+(v.type==='text'?'selected':'')+'>Текст (придёт сообщением)</option>'
+    +   '<option value="file" '+(v.type==='file'?'selected':'')+'>Файл (ссылка, придёт файлом)</option>'
+    + '</select></div>'
+    + '<div><label>Порядок сортировки</label><input id="p-sort" type="number" value="'+(v.sort||0)+'"></div>'
+    + '</div>'
+    + '<label>'+(v.type==='file'?'Ссылка на файл (прямая URL-ссылка)':'Содержимое (текст, выдадим после оплаты)')+'</label>'
+    + '<textarea id="p-content">'+esc(v.content)+'</textarea>'
+    + '<label>Ссылка на картинку (необязательно)</label><input id="p-image" value="'+esc(v.image_url)+'">'
+    + '<div class="check"><input type="checkbox" id="p-featured" '+(v.featured?'checked':'')+'><span>Показывать в «Популярные продукты»</span></div>'
+    + '<div class="check"><input type="checkbox" id="p-collection" '+(v.collection?'checked':'')+'><span>Товар коллекции TORQUM Select</span></div>'
+    + '<div class="check"><input type="checkbox" id="p-active" '+(v.active?'checked':'')+'><span>Активен (виден в каталоге)</span></div>'
+    + '<div style="display:flex;gap:8px;margin-top:18px">'
+    + '<button class="btn primary" style="flex:2" onclick="saveProduct()">Сохранить</button>'
+    + '<button class="btn" style="flex:1" onclick="closeForm()">Отмена</button>'
+    + '</div>';
+  document.getElementById('pform').classList.add('open');
+}
+
+async function saveProduct(){
+  const body = {
+    id: document.getElementById('p-id').value || null,
+    title: document.getElementById('p-title').value.trim(),
+    description: document.getElementById('p-desc').value.trim(),
+    price: document.getElementById('p-price').value,
+    count: document.getElementById('p-count').value,
+    category: document.getElementById('p-cat').value.trim(),
+    badge: document.getElementById('p-badge').value.trim(),
+    type: document.getElementById('p-type').value,
+    sort: document.getElementById('p-sort').value || 0,
+    content: document.getElementById('p-content').value.trim(),
+    image_url: document.getElementById('p-image').value.trim(),
+    featured: document.getElementById('p-featured').checked ? 1 : 0,
+    collection: document.getElementById('p-collection').checked ? 1 : 0,
+    active: document.getElementById('p-active').checked ? 1 : 0
+  };
+  if (!body.title){ toast('Укажите название'); return; }
+  try {
+    await api('/api/admin/product', {method:'POST', body:body});
+    toast('Сохранено ✓');
+    closeForm();
+    await load();
+  } catch(e){ toast(e.message); }
+}
+
+async function delProduct(id){
+  if (!confirm('Удалить товар безвозвратно?')) return;
+  try {
+    await api('/api/admin/product/delete', {method:'POST', body:{id:id}});
+    toast('Удалено');
+    await load();
+  } catch(e){ toast(e.message); }
+}
+
+/* ---------- контент ---------- */
+
+function fillSettings(){
+  const s = D.settings || {};
+  document.getElementById('s-home_text').value = s.home_text || '';
+  document.getElementById('s-about_text').value = s.about_text || '';
+  document.getElementById('s-support_contacts').value = s.support_contacts || '';
+  document.getElementById('s-categories').value = s.categories || '';
+}
+async function saveSettings(){
+  try {
+    await api('/api/admin/settings', {method:'POST', body:{
+      home_text: document.getElementById('s-home_text').value,
+      about_text: document.getElementById('s-about_text').value,
+      support_contacts: document.getElementById('s-support_contacts').value,
+      categories: document.getElementById('s-categories').value
+    }});
+    toast('Контент обновлён ✓');
+  } catch(e){ toast(e.message); }
+}
+
+/* ---------- заказы ---------- */
+
+function renderOrders(){
+  const t = document.getElementById('otable');
+  if (!D.orders.length){ t.innerHTML = '<tr><td>Заказов пока нет</td></tr>'; return; }
+  const rows = D.orders.map(o=>{
+    const items = JSON.parse(o.items).map(i=>esc(i.title)+' ×'+i.qty).join(', ');
+    return '<tr><td>'
+      + '<span class="st '+esc(o.status)+'">'+esc(o.status)+'</span><br>'
+      + '<span class="hint">'+fmtDate(o.created_at)+(o.username?(' · @'+esc(o.username)):'')+'</span><br>'
+      + items + '<br><b style="color:var(--volt)">'+fmt(o.total)+'</b>'
+      + '</td></tr>';
+  }).join('');
+  t.innerHTML = '<tr><th>Заказы</th></tr>' + rows;
+}
+
+async function load(){
+  D = await api('/api/admin/data');
+  renderProducts(); fillSettings(); renderOrders();
+}
+
+async function boot(){
+  try {
+    await load();
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').style.display='block';
+  } catch(e){
+    const denied = e.message && e.message.indexOf('администратор') !== -1;
+    document.getElementById('gate').innerHTML = denied
+      ? '<b style="color:#fff">TORQUM</b><br><br>Доступ ограничен.<br>Эта страница только для команды проекта.'
+      : '<b style="color:#fff">TORQUM</b><br><br>Откройте панель управления через бота.';
+  }
+}
+boot();
+</script>
+</body>
+</html>
