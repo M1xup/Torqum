@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TORQUM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --obsidian:#090A0C; --graphite:#17191D; --graphite2:#1F2126; --titanium:#C5C8CD;
+  --volt:#B6F36A; --muted:#7A7F88; --line:#24272d; --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--obsidian);color:var(--titanium);font-family:'Space Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.55;overscroll-behavior-y:contain}
+a{color:var(--titanium)}
+button{font-family:inherit}
+
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(9,10,12,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{text-align:center}
+.logo{font-weight:700;letter-spacing:.42em;text-indent:.42em;color:#fff;font-size:15px}
+.logo-sub{font-size:8px;letter-spacing:.32em;text-indent:.32em;color:var(--muted);margin-top:1px}
+.icon-btn{position:relative;width:40px;height:40px;border:1px solid var(--line);border-radius:12px;background:var(--graphite);color:var(--titanium);font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.icon-btn:active{transform:scale(.95)}
+.count{position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;border-radius:9px;background:var(--volt);color:#090A0C;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+
+main{padding:8px 16px 100px;max-width:560px;margin:0 auto}
+.kicker{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+h1{font-size:27px;line-height:1.15;color:#fff;font-weight:700;letter-spacing:-.01em}
+h2{font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--titanium);margin:34px 0 14px;font-weight:600}
+h2 .accent{color:var(--volt)}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+
+.btn{display:block;width:100%;padding:15px 18px;border-radius:14px;border:1px solid var(--line);background:var(--graphite);color:var(--titanium);font-size:14px;font-weight:600;letter-spacing:.04em;cursor:pointer;text-align:center}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--volt);border-color:var(--volt);color:#0A0C08}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+.hero{padding:26px 0 6px}
+.hero h1{margin:10px 0 12px}
+.hero p{color:var(--muted);margin-bottom:20px;white-space:pre-line}
+.hero .eyebrow{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:10px;letter-spacing:.22em;color:var(--titanium);text-transform:uppercase}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;padding:8px 15px;border-radius:999px;border:1px solid var(--line);background:var(--graphite);color:var(--titanium);font-size:12px;cursor:pointer;white-space:nowrap}
+.chip.active{background:var(--volt);border-color:var(--volt);color:#0A0C08;font-weight:600}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--graphite);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;cursor:pointer}
+.card:active{transform:scale(.98)}
+.thumb{aspect-ratio:4/3;background:linear-gradient(135deg,#1c1f25,#121317);position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#2e3239;letter-spacing:.2em}
+.cinfo{padding:12px 13px 14px}
+.ctitle{color:#fff;font-weight:600;font-size:14px}
+.cdesc{color:var(--muted);font-size:12px;margin-top:3px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.cfoot{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.price{color:var(--volt);font-weight:700;font-size:14px}
+.tag{font-size:9px;letter-spacing:.14em;text-transform:uppercase;border:1px solid #3a3f28;color:var(--volt);border-radius:6px;padding:3px 7px}
+
+.select-block{position:relative;background:linear-gradient(160deg,#14161b,#0c0d10);border:1px solid var(--line);border-radius:20px;padding:22px 18px;margin-top:6px}
+.select-block h3{font-size:13px;letter-spacing:.26em;color:#fff;margin-bottom:8px}
+.select-block p{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+.empty{text-align:center;color:var(--muted);padding:44px 10px}
+.empty .big{font-size:38px;margin-bottom:10px}
+
+.cart-item{display:flex;gap:12px;align-items:center;background:var(--graphite);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.ci-thumb{width:52px;height:52px;border-radius:10px;overflow:hidden;flex:0 0 auto;background:#1c1f25}
+.ci-thumb img{width:100%;height:100%;object-fit:cover}
+.ci-name{flex:1;min-width:0}
+.ci-name b{color:#fff;font-size:13px;display:block}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:var(--graphite2);color:var(--titanium);font-size:14px;cursor:pointer}
+.qty span{min-width:18px;text-align:center;font-weight:600}
+.del{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px}
+
+.summary{background:var(--graphite);border:1px solid var(--line);border-radius:16px;padding:16px;margin:16px 0}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:var(--muted)}
+.sum-row b{color:var(--titanium);font-weight:500}
+.sum-total{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:10px;padding-top:12px;font-size:16px;color:#fff;font-weight:600}
+.sum-total .price{font-size:18px}
+
+.legal{display:flex;gap:14px;justify-content:center;margin:16px 0 4px;font-size:11px}
+.legal a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--muted)}
+.support-box{background:var(--graphite);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:13px;color:var(--muted);white-space:pre-line;margin-top:14px}
+
+nav#bottom{position:fixed;bottom:0;left:0;right:0;z-index:40;display:flex;background:rgba(13,14,17,.97);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+nav#bottom button{flex:1;background:none;border:none;color:var(--muted);font-size:10px;letter-spacing:.06em;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer}
+nav#bottom button .ic{font-size:19px;line-height:1}
+nav#bottom button.active{color:var(--volt)}
+
+#drawer{position:fixed;inset:0;z-index:50;display:none}
+#drawer.open{display:block}
+#drawer .back{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+#drawer .panel{position:absolute;top:0;right:0;bottom:0;width:78%;max-width:320px;background:var(--graphite);border-left:1px solid var(--line);padding:22px 18px;overflow-y:auto}
+#drawer .panel h4{font-size:11px;letter-spacing:.26em;color:var(--muted);text-transform:uppercase;margin:18px 0 10px}
+#drawer .panel h4:first-child{margin-top:0}
+.drawer-link{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);color:var(--titanium);font-size:14px;padding:13px 2px;cursor:pointer}
+.drawer-link:active{color:var(--volt)}
+
+#modal{position:fixed;inset:0;z-index:60;display:none;overflow-y:auto}
+#modal.open{display:block}
+#modal .back{position:fixed;inset:0;background:rgba(0,0,0,.72)}
+#modal .sheet{position:relative;margin:14px auto 30px;max-width:520px;width:calc(100% - 24px);background:var(--obsidian);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.sheet .thumb{aspect-ratio:16/9}
+.sheet-body{padding:18px 18px 22px}
+.sheet-title{font-size:20px;color:#fff;font-weight:700}
+.sheet-price{font-size:20px;margin:10px 0 4px}
+.sheet-desc{color:var(--muted);font-size:13px;white-space:pre-line;margin:12px 0 16px}
+.meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.meta{font-size:11px;border:1px solid var(--line);border-radius:8px;padding:4px 9px;color:var(--muted)}
+.meta.ok{color:var(--volt);border-color:#3a4a22}
+.meta.out{color:#e08a8a;border-color:#4a2c2c}
+
+#toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:70;background:var(--graphite2);border:1px solid var(--line);color:var(--titanium);font-size:13px;padding:11px 16px;border-radius:12px;max-width:88%;display:none;text-align:center}
+#toast.show{display:block}
+#toast.err{border-color:#4a2c2c}
+
+.order-card{background:var(--graphite);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.order-card .odate{font-size:11px;color:var(--muted)}
+.content-box{margin-top:10px;background:var(--graphite2);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:13px;white-space:pre-line;word-break:break-word}
+.content-box a{color:var(--volt);word-break:break-all}
+.warn{background:#1c1417;border:1px solid #4a2c2c;color:#e0a0a0;border-radius:12px;padding:11px 13px;font-size:12px;margin-top:12px;display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="icon-btn" onclick="toggleDrawer(true)">☰</button>
+  <div class="brand">
+    <div class="logo">T O R Q U M</div>
+    <div class="logo-sub">DIGITAL PRODUCTS STORE</div>
+  </div>
+  <button class="icon-btn" onclick="go('cart')">🛒<span class="count" id="cartCount"></span></button>
+</header>
+
+<main id="view"></main>
+
+<nav id="bottom">
+  <button data-tab="home" class="active"><span class="ic">◉</span>Главная</button>
+  <button data-tab="catalog"><span class="ic">▤</span>Каталог</button>
+  <button data-tab="cart"><span class="ic">⬒</span>Корзина</button>
+  <button data-tab="about"><span class="ic">◇</span>О нас</button>
+</nav>
+
+<div id="drawer">
+  <div class="back" onclick="toggleDrawer(false)"></div>
+  <div class="panel">
+    <div class="logo" style="letter-spacing:.34em;text-indent:0">TORQUM</div>
+    <h4>Аккаунт</h4>
+    <button class="drawer-link" onclick="openPurchases()">Мои покупки</button>
+    <h4>Помощь</h4>
+    <button class="drawer-link" onclick="openSupport()">Служба поддержки</button>
+    <button class="drawer-link" onclick="openPage('/policy')">Политика конфиденциальности</button>
+    <button class="drawer-link" onclick="openPage('/terms')">Пользовательское соглашение</button>
+    <h4>Прочее</h4>
+    <button class="drawer-link" onclick="location.reload()">Обновить приложение</button>
+  </div>
+</div>
+
+<div id="modal"><div class="back" onclick="closeModal()"></div><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+
+<script>
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+const initData = tg ? tg.initData : '';
+try { if (tg) { tg.ready(); tg.expand(); } } catch(e) {}
+
+const ORIGIN = location.origin;
+let S = { settings:{}, categories:[], products:[], tab:'home', cat:'__all__', pending:false };
+let cart = {};
+try { cart = JSON.parse(localStorage.getItem('torqum_cart') || '{}'); } catch(e) { cart = {}; }
+
+function saveCart(){ localStorage.setItem('torqum_cart', JSON.stringify(cart)); updateCount(); }
+function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+function updateCount(){
+  const el = document.getElementById('cartCount');
+  const n = cartCount();
+  el.style.display = n ? 'flex' : 'none';
+  el.textContent = n;
+}
+function fmt(n){ return new Intl.NumberFormat('ru-RU').format(Math.round(n*100)/100) + ' ₽'; }
+function esc(s){ const d=document.createElement('div'); d.textContent = (s==null?'':String(s)); return d.innerHTML; }
+function fmtDate(ts){ if(!ts) return ''; return new Date(ts*1000).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+
+async function api(path, opts){
+  opts = opts || {};
+  const r = await fetch(path, {
+    method: opts.method || 'GET',
+    headers: { 'Content-Type':'application/json', 'X-Init-Data': initData },
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  if (!r.ok){
+    let detail = 'Ошибка ' + r.status;
+    try { const j = await r.json(); if (j.detail) detail = j.detail; } catch(e){}
+    throw new Error(detail);
+  }
+  return r.json();
+}
+
+function toast(msg, isErr){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = isErr ? 'show err' : 'show';
+  clearTimeout(t._h);
+  t._h = setTimeout(()=>{ t.className=''; }, 3400);
+}
+
+function go(tab){
+  S.tab = tab;
+  document.querySelectorAll('nav#bottom button').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  if (tab==='home') renderHome();
+  else if (tab==='catalog') renderCatalog();
+  else if (tab==='cart') renderCart();
+  else if (tab==='about') renderAbout();
+  window.scrollTo(0,0);
+}
+
+/* ---------- рендеры ---------- */
+
+function thumb(p, big){
+  if (p.image_url) return '<img src="'+esc(p.image_url)+'" alt="" onerror="this.style.display=\'none\'">';
+  return '<div class="ph">'+esc((p.title||'T').charAt(0))+'</div>';
+}
+
+function card(p){
+  return '<div class="card" onclick="openProduct('+p.id+')">'
+    + '<div class="thumb">'+thumb(p)+'</div>'
+    + '<div class="cinfo">'
+    +   '<div class="ctitle">'+esc(p.title)+'</div>'
+    +   '<div class="cdesc">'+esc(p.description)+'</div>'
+    +   '<div class="cfoot"><span class="price">'+fmt(p.price)+'</span>'
+    +   (p.badge ? '<span class="tag">'+esc(p.badge)+'</span>' : '')
+    + '</div></div></div>';
+}
+
+function renderHome(){
+  const v = document.getElementById('view');
+  const featured = S.products.filter(p=>p.featured);
+  const coll = S.products.filter(p=>p.collection);
+  let cats = '';
+  if (S.categories.length){
+    cats = '<div class="chips" style="margin-top:22px">'
+      + S.categories.map(c=>'<button class="chip" onclick="goCatalogCat('+JSON.stringify(c).replace(/"/g,'&quot;')+')">'+esc(c)+'</button>').join('')
+      + '</div>';
+  }
+  v.innerHTML =
+    '<section class="hero">'
+    + '<span class="eyebrow">Digital Collection</span>'
+    + '<h1>Больше, чем просто файлы.</h1>'
+    + '<p>'+esc(S.settings.home_text||'')+'</p>'
+    + '<button class="btn primary" onclick="go(\'catalog\')">Открыть каталог ↗</button>'
+    + '</section>'
+    + cats
+    + (featured.length ? '<h2>Популярные <span class="accent">продукты</span></h2><div class="grid">'+featured.map(card).join('')+'</div>' : '')
+    + (coll.length
+        ? '<h2>TORQUM <span class="accent">Select</span></h2>'
+          + '<div class="select-block"><h3>TORQUM SELECT</h3><p>Больше возможностей. Один уровень выше. Подборка премиальных наборов для тех, кто хочет больше от своей работы.</p><button class="btn ghost" style="width:auto;padding:12px 20px" onclick="goCatalogSelect()">Исследовать коллекцию ↗</button></div>'
+          + '<div class="grid" style="margin-top:14px">'+coll.map(card).join('')+'</div>'
+        : '')
+    + '<h2>TORQUM <span class="accent">Store</span></h2>'
+    + '<div class="small muted">Каждый продукт отбирается вручную. Оплата через защищённую платёжную систему RollyPay, выдача — сразу после подтверждения платежа.</div>'
+    + '<div class="legal" style="justify-content:flex-start;margin-top:22px">'
+    + '<a href="'+ORIGIN+'/policy" onclick="openPage(\'' + ORIGIN + '/policy\');return false">Политика конфиденциальности</a>'
+    + '<a href="'+ORIGIN+'/terms" onclick="openPage(\'' + ORIGIN + '/terms\');return false">Пользовательское соглашение</a>'
+    + '</div>';
+}
+
+function goCatalogCat(cat){ S.cat = cat; go('catalog'); }
+function goCatalogSelect(){ S.cat = '__select__'; go('catalog'); }
+
+function renderCatalog(){
+  const v = document.getElementById('view');
+  let list = S.products;
+  if (S.cat === '__select__') list = list.filter(p=>p.collection);
+  else if (S.cat !== '__all__') list = list.filter(p=>p.category===S.cat);
+  const chips = ['<button class="chip '+(S.cat==='__all__'?'active':'')+'" onclick="S.cat=\'__all__\';renderCatalog()">Все продукты</button>']
+    .concat(S.categories.map(c=>'<button class="chip '+(S.cat===c?'active':'')+'" onclick="S.cat='+JSON.stringify(c).replace(/"/g,'&quot;')+';renderCatalog()">'+esc(c)+'</button>'));
+  v.innerHTML =
+    '<h2 style="margin-top:18px">Каталог</h2>'
+    + '<div class="chips">'+chips.join('')+'</div>'
+    + (list.length
+        ? '<div class="grid" style="margin-top:16px">'+list.map(card).join('')+'</div>'
+        : '<div class="empty"><div class="big">◇</div>В этой категории пока пусто.<br>Загляните позже или откройте все продукты.</div>');
+}
+
+function openProduct(id){
+  const p = S.products.find(x=>x.id===id);
+  if (!p) return;
+  const out = p.count===0, limited = p.count>0;
+  document.getElementById('sheet').innerHTML =
+    '<div class="thumb" style="margin:14px 14px 0;border-radius:14px">'+thumb(p)+'</div>'
+    + '<div class="sheet-body">'
+    + '<div class="kicker">'+esc(p.category||'Digital product')+'</div>'
+    + '<div class="sheet-title">'+esc(p.title)+'</div>'
+    + '<div class="sheet-price price">'+fmt(p.price)+'</div>'
+    + '<div class="meta-row">'
+    +   '<span class="meta '+(out?'out':'ok')+'">'+(out?'Нет в наличии':(limited?('В наличии: '+p.count+' шт.'):'Всегда в наличии'))+'</span>'
+    +   (p.type==='file' ? '<span class="meta">Цифровой файл</span>' : '<span class="meta">Материал</span>')
+    +   (p.badge ? '<span class="meta">'+esc(p.badge)+'</span>' : '')
+    + '</div>'
+    + '<div class="sheet-desc">'+esc(p.description)+'</div>'
+    + (out
+        ? '<button class="btn" disabled>Нет в наличии</button>'
+        : '<button class="btn primary" onclick="addToCart('+p.id+')">В корзину · '+fmt(p.price)+'</button>')
+    + '</div>';
+  document.getElementById('modal').classList.add('open');
+}
+
+function addToCart(id){
+  const p = S.products.find(x=>x.id===id);
+  if (!p) return;
+  const cur = cart[id]||0;
+  if (p.count>0 && cur>=p.count){ toast('Больше нет в наличии', true); return; }
+  cart[id] = cur+1;
+  saveCart();
+  closeModal();
+  toast('Добавлено в корзину ✓');
+}
+
+function changeQty(id, d){
+  const p = S.products.find(x=>x.id===id);
+  let q = (cart[id]||0) + d;
+  if (q<=0) delete cart[id];
+  else {
+    if (p && p.count>0 && q>p.count){ toast('В наличии только '+p.count+' шт.', true); return; }
+    cart[id] = q;
+  }
+  saveCart(); renderCart();
+}
+
+function removeItem(id){ delete cart[id]; saveCart(); renderCart(); }
+
+function renderCart(){
+  const v = document.getElementById('view');
+  const entries = Object.keys(cart).map(id=>({id:+id, qty:cart[id]})).map(e=>{
+    const p = S.products.find(x=>x.id===e.id);
+    return p ? Object.assign({}, e, {p:p}) : null;
+  }).filter(Boolean);
+  if (!entries.length){
+    v.innerHTML = '<h2 style="margin-top:18px">Корзина</h2>'
+      + '<div class="empty"><div class="big">⬒</div>Корзина пуста.<br>В каталоге уже ждут достойные экземпляры.</div>'
+      + '<button class="btn primary" onclick="go(\'catalog\')">Открыть каталог</button>';
+    return;
+  }
+  let total = 0;
+  const rows = entries.map(e=>{
+    const sum = e.p.price*e.qty; total += sum;
+    return '<div class="cart-item">'
+      + '<div class="ci-thumb">'+thumb(e.p)+'</div>'
+      + '<div class="ci-name"><b>'+esc(e.p.title)+'</b><span class="small muted">'+fmt(e.p.price)+' × '+e.qty+'</span></div>'
+      + '<div class="qty"><button onclick="changeQty('+e.id+',-1)">−</button><span>'+e.qty+'</span><button onclick="changeQty('+e.id+',1)">+</button></div>'
+      + '<button class="del" onclick="removeItem('+e.id+')">✕</button>'
+      + '</div>';
+  }).join('');
+  const breakdown = entries.map(e=>{
+    const sum = e.p.price*e.qty;
+    return '<div class="sum-row"><span>'+esc(e.p.title)+' × '+e.qty+'</span><b>'+fmt(sum)+'</b></div>';
+  }).join('');
+  v.innerHTML =
+    '<h2 style="margin-top:18px">Корзина</h2>'
+    + rows
+    + '<div class="summary">'
+    +   '<div class="kicker">Состав заказа</div>'
+    +   breakdown
+    +   '<div class="sum-total"><span>Итого</span><span class="price">'+fmt(total)+'</span></div>'
+    + '</div>'
+    + '<button class="btn primary" id="payBtn" onclick="checkout()">Оплатить через RollyPay</button>'
+    + '<div class="warn" id="payWarn"></div>'
+    + '<div class="support-box">Оплата проходит через защищённую платёжную систему RollyPay (СБП и другие способы). После подтверждения платежа товары придут вам в чат с ботом и появятся в разделе «Мои покупки».</div>'
+    + '<div class="legal">'
+    + '<a href="'+ORIGIN+'/policy" onclick="openPage(\'' + ORIGIN + '/policy\');return false">Политика конфиденциальности</a>'
+    + '<a href="'+ORIGIN+'/terms" onclick="openPage(\'' + ORIGIN + '/terms\');return false">Пользовательское соглашение</a>'
+    + '</div>'
+    + '<div class="small muted" style="text-align:center;margin-top:6px">Поддержка: '+esc(S.settings.support_contacts||'')+'</div>';
+}
+
+async function checkout(){
+  if (S.pending) return;
+  if (!initData){ showPayWarn('Откройте приложение через бота, чтобы оформить заказ.'); return; }
+  S.pending = true;
+  const btn = document.getElementById('payBtn');
+  if (btn) btn.disabled = true;
+  try {
+    const items = Object.keys(cart).map(id=>({product_id:+id, qty:cart[id]}));
+    const res = await api('/api/checkout', {method:'POST', body:{items:items}});
+    if (res.pay_url){
+      if (tg && tg.openLink) tg.openLink(res.pay_url); else window.open(res.pay_url,'_blank');
+      toast('Открываем страницу оплаты…');
+    } else {
+      showPayWarn('Платёжная система временно недоступна. Попробуйте позже или напишите в поддержку.');
+    }
+  } catch(e){
+    showPayWarn(e.message);
+  }
+  if (btn) btn.disabled = false;
+  S.pending = false;
+}
+function showPayWarn(msg){
+  const w = document.getElementById('payWarn');
+  if (w){ w.style.display='block'; w.textContent = msg; } else toast(msg, true);
+}
+
+function renderAbout(){
+  const v = document.getElementById('view');
+  v.innerHTML =
+    '<h2 style="margin-top:18px">О нас</h2>'
+    + '<div class="sheet-desc" style="font-size:14px">'+esc(S.settings.about_text||'')+'</div>'
+    + '<div class="kicker" style="margin-top:22px">Служба поддержки</div>'
+    + '<div class="support-box">'+esc(S.settings.support_contacts||'')+'</div>'
+    + '<div class="legal" style="justify-content:flex-start">'
+    + '<a href="'+ORIGIN+'/policy" onclick="openPage(\'' + ORIGIN + '/policy\');return false">Политика конфиденциальности</a>'
+    + '<a href="'+ORIGIN+'/terms" onclick="openPage(\'' + ORIGIN + '/terms\');return false">Пользовательское соглашение</a>'
+    + '</div>'
+    + '<div class="small muted" style="margin-top:14px;letter-spacing:.2em">T O R Q U M · DIGITAL PRODUCTS STORE</div>';
+}
+
+/* ---------- модальные ---------- */
+
+function closeModal(){ document.getElementById('modal').classList.remove('open'); document.getElementById('sheet').innerHTML=''; }
+
+function openPage(url){
+  if (tg && tg.openLink) tg.openLink(url); else window.open(url,'_blank');
+}
+
+async function openPurchases(){
+  const sheet = document.getElementById('sheet');
+  sheet.innerHTML = '<div class="sheet-body"><div class="kicker">Аккаунт</div><div class="sheet-title">Мои покупки</div><div class="empty">Загрузка…</div></div>';
+  document.getElementById('modal').classList.add('open');
+  if (!initData){
+    sheet.innerHTML = '<div class="sheet-body"><div class="sheet-title">Мои покупки</div><div class="warn" style="display:block;margin-top:14px">Откройте приложение через бота, чтобы видеть покупки.</div></div>';
+    return;
+  }
+  try {
+    const res = await api('/api/purchases');
+    if (!res.orders.length){
+      sheet.innerHTML = '<div class="sheet-body"><div class="sheet-title">Мои покупки</div><div class="empty"><div class="big">◇</div>Пока ничего нет.<br>После оплаты товары появятся здесь и в чате с ботом.</div><button class="btn primary" onclick="closeModal();go(\'catalog\')">В каталог</button></div>';
+      return;
+    }
+    const html = res.orders.map(o=>{
+      const items = o.items.map(it=>{
+        if (it.type==='file' && it.content){
+          return '<div class="content-box"><b style="color:#fff">'+esc(it.title)+'</b><br><a href="'+esc(it.content)+'" onclick="openPage(\''+esc(it.content)+'\');return false">Скачать файл ↗</a></div>';
+        }
+        if (it.content){
+          return '<div class="content-box"><b style="color:#fff">'+esc(it.title)+'</b><br>'+esc(it.content)+'</div>';
+        }
+        return '<div class="content-box">'+esc(it.title)+' — свяжитесь с поддержкой</div>';
+      }).join('');
+      return '<div class="order-card"><div class="odate">Заказ '+esc(o.order_id.slice(0,8))+' · '+fmtDate(o.created_at)+' · '+fmt(o.total)+'</div>'+items+'</div>';
+    }).join('');
+    sheet.innerHTML = '<div class="sheet-body"><div class="kicker">Аккаунт</div><div class="sheet-title">Мои покупки</div><div style="margin-top:14px">'+html+'</div></div>';
+  } catch(e){
+    sheet.innerHTML = '<div class="sheet-body"><div class="sheet-title">Мои покупки</div><div class="warn" style="display:block;margin-top:14px">'+esc(e.message)+'</div></div>';
+  }
+}
+
+function toggleDrawer(open){
+  document.getElementById('drawer').classList.toggle('open', open);
+}
+
+async function openSupport(){
+  const sheet = document.getElementById('sheet');
+  let contacts = S.settings.support_contacts || '';
+  if (!contacts){ try { const r = await api('/api/support'); contacts = r.contacts; } catch(e){} }
+  sheet.innerHTML = '<div class="sheet-body">'
+    + '<div class="kicker">Помощь</div><div class="sheet-title">Служба поддержки</div>'
+    + '<div class="content-box" style="margin-top:14px">'+esc(contacts||'Контакты уточняются')+'</div>'
+    + '<p class="small muted" style="margin-top:12px">Опишите проблему и приложите номер заказа (из «Моих покупок») — ответим как можно быстрее.</p>'
+    + '</div>';
+  document.getElementById('modal').classList.add('open');
+}
+
+/* ---------- запуск ---------- */
+
+async function boot(){
+  updateCount();
+  if (!initData){
+    const v = document.getElementById('view');
+    v.innerHTML = '<div class="empty" style="padding-top:70px"><div class="big">◇</div><b style="color:#fff">TORQUM</b><br><br>Откройте приложение через бота,<br>чтобы видеть товары и цены.</div>';
+    return;
+  }
+  try {
+    const data = await api('/api/bootstrap');
+    S.settings = data.settings; S.categories = data.categories; S.products = data.products;
+    go('home');
+  } catch(e){
+    document.getElementById('view').innerHTML = '<div class="empty"><div class="big">◇</div>'+esc(e.message)+'</div>';
+  }
+}
+boot();
+</script>
+</body>
+</html>
