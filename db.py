@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 import aiosqlite
 
 from config import DB_PATH
@@ -56,11 +57,14 @@ _SEED_PRODUCTS = [
 ]
 
 
+@asynccontextmanager
 async def _connect():
     c = await aiosqlite.connect(DB_PATH)
     c.row_factory = aiosqlite.Row
-    return c
-
+    try:
+        yield c
+    finally:
+        await c.close()
 
 async def init_db():
     async with _connect() as c:
