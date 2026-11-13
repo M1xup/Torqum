@@ -10,6 +10,9 @@ ADMIN_USERNAMES = [
     if u.strip()
 ]
 
+# Контакт поддержки: показывается в Mini App, на страницах /policy и /terms
+SUPPORT_CONTACT = os.getenv("SUPPORT_CONTACT", "torqumbot@gmail.com")
+
 # RollyPay (заполняется позже, когда будет касса)
 ROLLYPAY_API_KEY = os.getenv("ROLLYPAY_API_KEY", "")
 ROLLYPAY_SIGNING_SECRET = os.getenv("ROLLYPAY_SIGNING_SECRET", "")
