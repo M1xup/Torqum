@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 import aiosqlite
 import time
 
-from config import DB_PATH
+from config import DB_PATH, SUPPORT_CONTACT
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS settings (
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS orders (
 DEFAULTS = {
     "home_text": "Цифровые продукты, созданные для новых идей и больших задач. Шаблоны, наборы и инструменты — в одном месте.",
     "about_text": "TORQUM — закрытая цифровая витрина премиальных продуктов.\n\nМы отбираем и создаём материалы, которые экономят ваше время: шаблоны, пресеты, наборы для работы и творчества. Каждый продукт проверяется вручную перед публикацией.\n\nПо любым вопросам пишите в службу поддержки — контакты указаны ниже.",
-    "support_contacts": "torqumbot@gmail.com — служба поддержки\nОпишите вопрос и укажите номер заказа — ответим в течение рабочего дня.",
+    "support_contacts": SUPPORT_CONTACT, " — служба поддержки\nОпишите вопрос и укажите номер заказа — ответим в течение рабочего дня.",
     "categories": "Для работы, Для творчества",
 }
 
