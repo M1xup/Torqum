@@ -20,4 +20,7 @@ ROLLYPAY_TEST_MODE = os.getenv("ROLLYPAY_TEST_MODE", "true").lower() in ("1", "t
 ROLLYPAY_API_URL = "https://rollypay.io/api/v1"
 
 WEBHOOK_PATH = "/webhooks/rollypay"
-DB_PATH = os.getenv("DB_PATH", "torqum.db")
+
+# БД в постоянной папке data/ — не обнуляется при пересборке и redeploy
+DB_PATH = os.getenv("DB_PATH", "data/torqum.db")
+os.makedirs(os.path.dirname(DB_PATH) or ".", exist_ok=True)
