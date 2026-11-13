@@ -20,9 +20,12 @@ async def require_user(request: Request) -> dict:
     init_data = request.headers.get("X-Init-Data", "")
     user = parse_init_data(config.BOT_TOKEN, init_data)
     if not user:
-        raise HTTPException(status_code=401, detail="Требуется авторизация через Telegram")
+        reason = ("Подпись initData не совпала — авторизация Telegram не прошла"
+                  if init_data else
+                  "Нет данных авторизации Telegram — откройте приложение через кнопку бота")
+        raise HTTPException(status_code=401, detail=reason)
     return user
-
+    
 
 async def require_admin(request: Request) -> dict:
     user = await require_user(request)
