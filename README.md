@@ -28,6 +28,7 @@
 | `BOT_TOKEN` | токен бота от @BotFather |
 | `DOMAIN` | домен из панели Bothost (подставляется автоматически) |
 | `ADMIN_USERNAMES` | username'ы админов через запятую: `M1xup,unclued` |
+| `SUPPORT_CONTACT` | контакт поддержки: показывается в Mini App, на /policy и /terms |
 | `ROLLYPAY_API_KEY` | api_key кассы (заполнить позже) |
 | `ROLLYPAY_SIGNING_SECRET` | секрет подписи вебхуков кассы (заполнить позже) |
 | `ROLLYPAY_TEST_MODE` | `true` — тестовые платежи (sandbox), `false` — боевые |
